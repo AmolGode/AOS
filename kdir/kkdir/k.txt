@@ -1,0 +1,430 @@
+Q1
+
+#include<stdio.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<stdlib.h>
+// #include<errno.h>
+// #include<sys/wait.h>
+// #include<sys/types.h>
+int main()
+{
+    int fd[2],dupFd;
+    char *filename ="ls";
+    char *arg1 = "-l";
+    pipe(fd);
+    if(!fork())// return 0 for child process and 1 for parent process
+    {
+        close(1); // 1 for closing stdout
+        dup(fd[1]);
+        close(fd[0]);
+        execlp(filename,filename,arg1,NULL);
+    }else
+    {
+        close(0);
+        dup(fd[0]);
+        close(fd[1]);
+        execlp(filename,filename,arg1,NULL);
+    } 
+
+}
+
+OUTPUT
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q1.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out
+total 160
+drwxrwxr-x 2 amol amol  4096 May 28 16:19  adir
+-rw-rw-r-- 1 amol amol     0 May 29 13:05 'AOS Solution 2022.txt'
+-rwxrwxr-x 1 amol amol 16912 May 29 13:06  a.out
+drwxrwxr-x 3 amol amol  4096 May 28 17:34  kdir
+drwxrwxr-x 2 amol amol  4096 May 28 13:05  mdir
+-rw-rw-r-- 1 amol amol   164 May 28 22:52  new2.txt
+
+----------------------------------------------------------------
+Q2
+
+#include<stdio.h>
+#include<unistd.h>
+#include<dirent.h>
+#include<string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int main()
+{
+    DIR *dir;
+    struct dirent *dirent;
+    char *ext = ".txt";
+    int i,j,len,fdNew,fd,flag;
+    char *ch;
+
+
+    fdNew = open("newFile1122.txt",O_CREAT|O_WRONLY,0642);
+    dir = opendir(".");
+    while((dirent = readdir(dir)) != NULL)
+    {
+        len = strlen(dirent->d_name);
+        flag = 1;
+        for(i = len-4, j = 0;i < len , j < 4; i++, j++)
+        {
+            if(dirent->d_name[i] != ext[j])
+            {
+                flag = 0;
+                break;
+            }
+        }
+        if(flag)
+        {
+            printf("%s matched \n",dirent->d_name);
+            fd = open(dirent->d_name,O_RDONLY);
+            while(read(fd,&ch,1))
+            {
+                write(fdNew,&ch,1);
+            }
+        }
+    }
+}
+
+
+OUTPUT
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q2.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out
+newFile1122.txt matched 
+q77.txt matched 
+temp.txt matched 
+temp2.txt matched 
+
+---------------------------------------------------------------------------------------------------------
+
+#include<stdio.h>
+#include<unistd.h>
+#include<string.h>
+#include<sys/stat.h>
+
+
+int main(int argc, char *argv[])
+{
+    int i,j;
+    long size1,size2;
+    struct stat st1,st2;
+    char temp_filename[100];
+    int size = argc-1;
+    char files[size][100];
+
+    if(argc < 1)
+    {
+        printf("Insufficient number of argumanet..!");
+    }
+
+    for(i = 0 ; i < size ; i++)
+    {
+        strcpy(files[i],argv[i+1]);
+    }
+    for(i = 0 ; i < argc-1; i++)
+    {
+        stat(files[i],&st1);
+        printf("File name = %s  ||  Size = %ld \n",files[i],st1.st_size);
+    }
+
+    printf("\n******In sordet order****** \n\n");
+
+    for(i = 0 ; i < size -1; i++)
+    {
+        for(j = 0; j < size - i - 1; j++)
+        {
+            stat(files[j],&st1);
+            stat(files[j+1],&st2);
+
+            size1 = st1.st_size;
+            size2 = st2.st_size;
+            if(size1 > size2)
+            {
+                strcpy(temp_filename,files[j]);
+                strcpy(files[j],files[j+1]);
+                strcpy(files[j+1],temp_filename);
+            }
+        }
+    }
+
+    for(i = 0 ; i < size; i++)
+    {
+        stat(files[i],&st1);
+        printf("File name = %s  ||  Size = %ld \n",files[i],st1.st_size);
+    }
+}
+
+
+output
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q3.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out q1.c temp.txt q2.txt
+File name = q1.c  ||  Size = 576 
+File name = temp.txt  ||  Size = 43 
+File name = q2.txt  ||  Size = 43 
+
+******In sordet order****** 
+
+File name = temp.txt  ||  Size = 43 
+File name = q2.txt  ||  Size = 43 
+File name = q1.c  ||  Size = 576 
+
+--------------------------------------------------------
+Q4 
+
+#include<stdio.h>
+#include<unistd.h>
+#include<dirent.h>
+#include<stdlib.h>
+
+int main()
+{
+    struct dirent **dirent_list;
+    int num_of_dir,i=0;
+
+    num_of_dir = scandir(".",&dirent_list,0,alphasort);
+    if(num_of_dir < 0)
+    {
+        perror("scandir");
+    }else
+    {
+        while(i < num_of_dir)
+        {
+            if(dirent_list[i]->d_type == 4)
+            {
+                printf("Directory Name = %s\n",dirent_list[i]->d_name);
+            }
+            i++;
+        }
+    }
+    free(dirent_list);
+}
+
+
+output
+
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q4.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out
+Directory Name = .
+Directory Name = ..
+Directory Name = .vscode
+Directory Name = adir
+Directory Name = kdir
+Directory Name = mdir
+Directory Name = zdir
+
+
+------------------------------------------------------------------------------------
+Q5
+
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<dirent.h>
+#include<stdlib.h> //atoi() for conversion of  string to int
+#include<string.h>
+
+void print_file_names(char dir_name[100],long nByte);
+
+int main(int argc, char *argv[])
+{
+    DIR *dir;
+    struct dirent *dirent;
+    struct stat st;
+    long nByte;
+
+    if(argc != 2)
+    {
+        printf("Invalid number of argument...!");
+        return 0;
+    }
+    nByte = atoi(argv[1]);
+
+    dir = opendir(".");
+    while((dirent = readdir(dir)) != NULL)
+    {
+        if(dirent->d_type == DT_DIR) // folder or directory
+        {  
+            print_file_names(dirent->d_name,nByte);
+        }else
+        {
+            stat(dirent->d_name,&st);
+            if(st.st_size > nByte)
+            {
+                printf("Directory Name = Current  --  File Name = %s  --  Size = %ld\n",dirent->d_name,st.st_size);
+            } 
+        }
+    }
+    closedir(dir);
+}
+
+void print_file_names(char dir_name[100],long nByte)
+{
+    DIR *dir;
+    struct dirent *dirent;
+    struct stat st;
+    int size;
+    char path[100];
+    
+    if(strcmp(dir_name,".") == 0 || strcmp(dir_name,"..") == 0 || dir_name[0] == '.')
+    {
+        return;
+    }
+
+    dir = opendir(dir_name);
+    while((dirent = readdir(dir)) != NULL)
+    {
+        if(dirent->d_type == DT_REG) //regular file
+        {
+            path[0] = '\0';
+            strcat(path,dir_name);
+            strcat(path,"/");
+
+            strcat(path,dirent->d_name);
+            stat(path,&st);
+
+            size = st.st_size;
+            if(size > nByte)
+            {
+                printf("Directory Name = %s  --  File Name = %s  --  Size = %d\n",dir_name,dirent->d_name,size);
+            }
+        }else
+        {
+            if(strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 || dirent->d_name[0] == '.')
+            {
+                continue;
+            }
+            path[0] = '\0';
+            strcat(path,dir_name);
+            strcat(path,"/");
+            strcat(path,dirent->d_name);
+
+            print_file_names(path,nByte);
+        }
+    }
+    closedir(dir);
+}
+
+
+OUTPUT
+
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q5.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out 100
+Directory Name = Current  --  File Name = q2.c  --  Size = 892
+Directory Name = Current  --  File Name = a.out  --  Size = 17152
+Directory Name = Current  --  File Name = q7.c  --  Size = 848
+Directory Name = Current  --  File Name = q5.c  --  Size = 2107
+
+---------------------------------------------------------------------
+
+Q6 
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<signal.h>
+void signint(int sig);
+void sighup(int sig);
+void sigquit(int sig);
+
+int gotsig;
+
+int main()
+{
+    int pid,i;
+    pid = fork();
+    if(pid < 0)
+    {
+        perror("fork");
+        exit(0);
+    }
+
+    if(pid == 0)
+    {
+        signal(SIGHUP,sighup);
+        signal(SIGINT,signint);
+        signal(SIGQUIT,sigquit);
+
+        pause();
+        while(1)
+        {
+            if(gotsig == SIGINT)
+            {
+                printf("Child : Child process recieved SIGINT signal\n");
+                gotsig = -1;
+            }else if(gotsig == SIGHUP)
+            {
+                printf("Child : Child process recieved SIGHUP signal\n"); 
+                gotsig = -1;
+            }else if(gotsig == SIGQUIT)
+            {
+                printf("Dady killed me....!\n");
+                exit(0);
+            }
+        }
+    }else
+    {
+        sleep(1);
+        for(i = 1; i <=5 ; i++)
+        {
+            if(i % 2 == 0)
+            {
+                printf("Parent : sending SIGINT signal\n");
+                kill(pid,SIGINT);
+                sleep(3);
+            }else
+            {
+                printf("Parent : sending SIGHUP signal\n");
+                kill(pid,SIGHUP);
+                sleep(3);
+            }
+        }
+        printf("Parent : sending SIGQUIT signal\n");
+        kill(pid,SIGQUIT);
+    }
+}
+
+void signint(int sig)
+{
+    gotsig = sig;
+}
+
+void sighup(int sig)
+{
+    gotsig = sig;
+}
+
+void sigquit(int sig)
+{
+    gotsig = sig;
+}
+
+
+output
+
+(base) amol@amol-Ideapad-320:~/AOS$ gcc q6.c
+(base) amol@amol-Ideapad-320:~/AOS$ ./a.out
+PARENT: sending SIGINT signal : 1
+Child: I have received sighINT
+PARENT: sending SIGHUP Signal : 2
+Child: I have received sighup
+PARENT: sending SIGINT signal : 3
+Child: I have received sighINT
+PARENT: sending SIGHUP Signal : 4
+Child: I have received sighup
+PARENT: sending SIGINT signal : 5
+Child: I have received sighINT
+Parent sending SIGQUIT
+My daddy has killed me
+
+-------------------------------------------------------------
+
+Q7
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include
+
+
+

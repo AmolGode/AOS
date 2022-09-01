@@ -1,0 +1,33 @@
+870  q2.c  Fri May 27 22:49:25 2022
+17264  a.out  Sun May 29 12:22:53 2022
+4096  .vscode  Sat May 28 14:36:30 2022
+4096  adir  Sat May 28 16:19:05 2022
+1237  output.txt  Sat May 28 23:15:25 2022
+848  q7.c  Sun May 29 12:09:56 2022
+39  newFile.txt  Fri May 27 22:38:42 2022
+2107  q5.c  Sat May 28 17:35:36 2022
+4096  ..  Sun May 29 00:24:57 2022
+4096  .  Sun May 29 12:22:53 2022
+1530  q66.c  Sat May 28 22:38:49 2022
+16912  q11  Fri May 27 19:36:58 2022
+4096  mdir  Sat May 28 13:05:01 2022
+1221  q77.txt  Sun May 29 12:22:54 2022
+345  new7.txt  Sat May 28 23:43:30 2022
+1063  q77.c  Sun May 29 12:22:39 2022
+16912  q1  Fri May 27 19:37:29 2022
+4096  kdir  Sat May 28 17:34:36 2022
+709  new77.txt  Sun May 29 00:10:23 2022
+1683  q3.c  Sat May 28 11:33:39 2022
+2398  q33.c  Sat May 28 10:19:33 2022
+164  new2.txt  Sat May 28 22:52:16 2022
+292  readFileNames.c  Sat May 28 15:27:54 2022
+1287  q6.c  Sat May 28 22:09:23 2022
+517  q4.c  Sat May 28 13:12:22 2022
+94  readWriteSys.c  Fri May 27 21:41:20 2022
+43  temp.txt  Sat May 28 15:23:29 2022
+21  temp2.txt  Sat May 28 10:29:32 2022
+4096  zdir  Sat May 28 13:04:57 2022
+576  q1.c  Fri May 27 19:37:26 2022
+813  q8.c  Sun May 29 12:08:59 2022
+ 29 12:08:59 2022
+  813  q8.c
